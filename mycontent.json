@@ -1,0 +1,52 @@
+{
+  "featureCards": [
+    {
+      "title": "High-Volume Ready",
+      "shortDescription": "Built for vendors and organizations producing ID cards at scale with speed and accuracy.",
+      "icon": "printer",
+      "category": "Scale & Performance"
+    },
+    {
+      "title": "Everyday ID Creation",
+      "shortDescription": "Ideal for schools, enterprises, and events where ID cards are created daily.",
+      "icon": "users",
+      "category": "Use Cases"
+    },
+    {
+      "title": "Built-In Designer",
+      "shortDescription": "Drag-and-drop ID card designer with front/back and horizontal/vertical layouts.",
+      "icon": "layout-template",
+      "category": "Design"
+    },
+    {
+      "title": "Custom Fields",
+      "shortDescription": "Create and manage custom fields tailored to any project or organization.",
+      "icon": "settings",
+      "category": "Customization"
+    },
+    {
+      "title": "Smart Forms",
+      "shortDescription": "Auto-generated forms for accurate data and photo collection without spreadsheets.",
+      "icon": "file-text",
+      "category": "Data Collection"
+    },
+    {
+      "title": "Any Device Entry",
+      "shortDescription": "Individuals can submit details and photos from mobile, tablet, or laptop.",
+      "icon": "smartphone",
+      "category": "Accessibility"
+    },
+    {
+      "title": "Bulk Generation",
+      "shortDescription": "Generate hundreds or thousands of ID cards from Excel or databases instantly.",
+      "icon": "layers",
+      "category": "Automation"
+    },
+    {
+      "title": "Print-Ready PDFs",
+      "shortDescription": "Auto-arranged, print-ready PDFs for A3, A4, and 12×18 paper sizes.",
+      "icon": "file-output",
+      "category": "Printing"
+    }
+  ]
+}

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Company — Home</title>
+  <style>
+    :root{--accent:#0a84ff;--muted:#666;--container:1200px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial,Helvetica,sans-serif;color:#222;background:#fafafa;-webkit-font-smoothing:antialiased}
+    header{background:#fff;border-bottom:1px solid #eee}
+    .nav{max-width:var(--container);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;gap:12px}
+    .brand{font-weight:700;font-size:18px;color:var(--accent)}
+    nav ul{list-style:none;margin:0;padding:0;display:flex;gap:16px}
+    nav a{color:#222;text-decoration:none;padding:8px 10px;border-radius:6px}
+    nav a:hover{background:#f0f8ff}
+
+    /* mobile menu button */
+    .menu-toggle{display:none;background:transparent;border:0;font-size:20px;color:var(--accent);cursor:pointer}
+
+    .hero{max-width:var(--container);margin:28px auto;padding:12px}
+    .features-wrap{position:relative;background:#fff;border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(15,15,15,0.05)}
+    .features-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .features-title h2{margin:0;font-size:18px}
+    .scroller{display:flex;gap:12px;overflow:hidden}
+    .features-list{display:flex;gap:12px;transition:transform 0.5s ease}
+
+    /* feature cards: use responsive flex-basis to allow 3/2/1 visible */
+    .feature-card{flex:0 0 33.333%;max-width:330px;background:#f7f9fc;border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;text-align:center}
+    .feature-image{width:100%;aspect-ratio:5/3;border-radius:8px;background:linear-gradient(135deg,#e6eefc,#f7fbff);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:15px;margin-bottom:12px;border:1px dashed #dfeefb}
+    .feature-title{font-weight:600;margin-bottom:6px}
+    .feature-desc{font-size:13px;color:var(--muted)}
+
+    .controls{display:flex;gap:8px;align-items:center}
+    .ctrl-btn{background:#fff;border:1px solid #e6eefc;color:var(--accent);padding:8px 10px;border-radius:6px;cursor:pointer}
+
+    /* responsive adjustments */
+    @media (max-width:1100px){
+      .feature-card{flex:0 0 50%;max-width:480px}
+    }
+    @media (max-width:880px){
+      .feature-card{flex:0 0 80%;max-width:720px}
+      .menu-toggle{display:inline-block}
+      nav ul{display:none}
+    }
+    @media (max-width:520px){
+      .nav{padding:12px}
+      .feature-card{flex:0 0 90%;min-width:90%}
+      .scroller{padding-left:12px}
+    }
+
+    /* mobile menu panel */
+    .mobile-menu{display:none;position:absolute;top:64px;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:12px}
+    .mobile-menu.open{display:block}
+    .mobile-menu a{display:block;padding:8px 0;color:#222}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">Pramana ID</div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+      <nav>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#">Home</a>
+      <a href="features.html">Features</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="#contact">Contact Us</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div style="max-width:1100px;margin:0 auto">
+        <h1 style="margin:0 0 8px">Welcome to Pramana ID</h1>
+        <p style="margin:0 0 18px;color:var(--muted)">Identity, Without Complexity </p>
+
+        <div class="features-wrap" id="features">
+          <div class="features-title">
+            <h2>Why Pramana ID?</h2>
+            <div class="controls">
+              <button id="prev" class="ctrl-btn">◀</button>
+              <button id="next" class="ctrl-btn">▶</button>
+            </div>
+          </div>
+
+          <div class="scroller">
+            <div class="features-list" id="featuresList">
+              <!-- feature cards loaded from mycontent.json -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section style="max-width:1100px;margin:28px auto;padding:16px">
+      
+      <div style="margin-top:18px">
+        <h3 id="contact">Contact Us</h3>
+        <p style="color:var(--muted)">Email: hello@yourcompany.example</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Basic horizontal scroller with prev/next and autoplay
+    (async function(){
+      const list = document.getElementById('featuresList');
+      
+      // Load first 5 features from mycontent.json (try local paths)
+      try{
+        const paths = ['./mycontent.json', 'mycontent.json', './External/mycontent.json', 'External/mycontent.json'];
+        let data = null;
+        for(const p of paths){
+          try{
+            const res = await fetch(p);
+            if(!res.ok) continue;
+            data = await res.json();
+            console.info('Loaded mycontent.json from', p);
+            break;
+          }catch(e){
+            console.warn('Failed to fetch', p);
+            continue;
+          }
+        }
+        
+        if(data){
+          let items = [];
+          if(Array.isArray(data.featureCards)) items = data.featureCards;
+          else if(Array.isArray(data.featurecards)) items = data.featurecards;
+          else if(Array.isArray(data.features)) items = data.features;
+          else if(Array.isArray(data.items)) items = data.items;
+          else if(Array.isArray(data)) items = data;
+          else if(typeof data === 'object') items = Object.values(data);
+          
+          const iconMap = { 
+            printer: '🖨️', users: '👥', 'layout-template': '🧩', settings: '⚙️', 
+            'file-text': '📄', smartphone: '📱', layers: '🗂️', 'file-output': '📤' 
+          };
+          
+          const slice = items.slice(0, 5);
+          slice.forEach(it => {
+            const card = document.createElement('div'); 
+            card.className='feature-card';
+            
+            const imgWrap = document.createElement('div'); 
+            imgWrap.className='feature-image';
+            
+            if(it.icon){
+              imgWrap.textContent = iconMap[it.icon] || it.icon;
+              imgWrap.style.fontSize='28px';
+            } else if(it.image){
+              const img = document.createElement('img');
+              img.src = it.image;
+              img.alt = it.title || '';
+              img.style.width='100%';
+              img.style.height='100%';
+              img.style.objectFit='cover';
+              img.style.borderRadius='6px';
+              imgWrap.innerHTML='';
+              imgWrap.appendChild(img);
+            } else {
+              imgWrap.textContent = it.title || 'Image';
+            }
+            
+            const title = document.createElement('div'); 
+            title.className='feature-title'; 
+            title.textContent = it.title || it.name || '';
+            
+            const desc = document.createElement('div'); 
+            desc.className='feature-desc'; 
+            desc.textContent = it.shortDescription || it.description || it.desc || '';
+            
+            card.appendChild(imgWrap); 
+            card.appendChild(title); 
+            card.appendChild(desc);
+            list.appendChild(card);
+          });
+        }
+      }catch(e){
+        console.warn('Failed to load featureCards for home:', e);
+      }
+      
+      // Continue with scroller initialization
+      const cards = list.children;
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      let index = 0;
+      let visible = 1;
+
+      function computeVisible(){
+        const scrollerWidth = document.querySelector('.scroller').clientWidth;
+        const cardPlusGap = (cards[0] && cards[0].clientWidth || 300) + 12;
+        const possible = Math.floor(scrollerWidth / cardPlusGap) || 1;
+        if(window.innerWidth <= 520) return 1;
+        return Math.min(3, possible);
+      }
+
+      function update(){
+        const offset = index * ((cards[0] && cards[0].clientWidth || 300) + 12);
+        list.style.transform = `translateX(-${offset}px)`;
+      }
+
+      next.addEventListener('click', ()=>{
+        index = Math.min(index + 1, Math.max(0, cards.length - visible)); 
+        update();
+      });
+      prev.addEventListener('click', ()=>{
+        index = Math.max(0, index - 1); 
+        update();
+      });
+
+      // compute visible and autoplay
+      visible = computeVisible();
+      let autoplay = setInterval(()=>{ 
+        index = (index + 1) % cards.length; 
+        if(index > cards.length - visible) index = 0; 
+        update(); 
+      }, 3000);
+      
+      // pause on hover
+      document.querySelector('.features-wrap').addEventListener('mouseenter', ()=> clearInterval(autoplay));
+      document.querySelector('.features-wrap').addEventListener('mouseleave', ()=> { 
+        autoplay = setInterval(()=>{ 
+          index = (index + 1) % cards.length; 
+          if(index > cards.length - visible) index = 0; 
+          update(); 
+        }, 3000); 
+      });
+
+      // make scroller touch-draggable
+      let startX = 0, scrollStart = 0, dragging = false;
+      const scroller = document.querySelector('.scroller');
+      scroller.addEventListener('pointerdown', (e)=>{ 
+        dragging = true; 
+        startX = e.clientX; 
+        scroller.setPointerCapture(e.pointerId); 
+        scrollStart = index; 
+      });
+      scroller.addEventListener('pointermove', (e)=>{ 
+        if(!dragging) return; 
+        const dx = e.clientX - startX; 
+        const step = (cards[0] && cards[0].clientWidth || 300) + 12; 
+        const delta = Math.round(-dx / step); 
+        index = Math.min(Math.max(0, scrollStart + delta), Math.max(0, cards.length - visible)); 
+        update(); 
+      });
+      scroller.addEventListener('pointerup', (e)=>{ 
+        dragging = false; 
+        try{ 
+          scroller.releasePointerCapture(e.pointerId); 
+        }catch(_){} 
+      });
+
+      // adjust on resize
+      window.addEventListener('resize', ()=>{
+        visible = computeVisible();
+        index = Math.min(index, Math.max(0, cards.length - visible)); 
+        update();
+      });
+
+      // initial layout
+      visible = computeVisible();
+      update();
+
+      // mobile menu toggle
+      const menuToggle = document.getElementById('menuToggle');
+      const mobileMenu = document.getElementById('mobileMenu');
+      if(menuToggle && mobileMenu){
+        menuToggle.addEventListener('click', ()=> mobileMenu.classList.toggle('open'));
+      }
+    })();
+  </script>
+</body>
+</html>
