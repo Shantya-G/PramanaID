@@ -22,8 +22,9 @@
     .features-wrap{position:relative;background:#fff;border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(15,15,15,0.05)}
     .features-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
     .features-title h2{margin:0;font-size:18px}
-    .scroller{display:flex;gap:12px;overflow:hidden}
-    .features-list{display:flex;gap:12px;transition:transform 0.5s ease}
+    .scroller{display:flex;gap:12px;overflow:hidden; -webkit-overflow-scrolling: touch;}
+    .features-list{display:flex;gap:12px;transition:transform 0.5s ease;}
+    .feature-card{ scroll-snap-align: center; }
 
     /* feature cards: use responsive flex-basis to allow 3/2/1 visible */
     .feature-card{flex:0 0 33.333%;max-width:330px;background:#f7f9fc;border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;text-align:center}
@@ -46,7 +47,8 @@
     @media (max-width:520px){
       .nav{padding:12px}
       .feature-card{flex:0 0 90%;min-width:90%}
-      .scroller{padding-left:12px}
+      .scroller{padding-left:12px; overflow-x:auto; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory}
+      .features-list{transition:none;}
     }
 
     /* mobile menu panel */
@@ -205,26 +207,46 @@
         return Math.min(3, possible);
       }
 
+      const scrollerEl = document.querySelector('.scroller');
       function update(){
         const offset = index * ((cards[0] && cards[0].clientWidth || 300) + 12);
-        list.style.transform = `translateX(-${offset}px)`;
+        if(window.innerWidth <= 520){
+          // use native scroll on small screens
+          scrollerEl.scrollTo({ left: offset, behavior: 'smooth' });
+        } else {
+          list.style.transform = `translateX(-${offset}px)`;
+        }
       }
 
       next.addEventListener('click', ()=>{
-        index = Math.min(index + 1, Math.max(0, cards.length - visible)); 
-        update();
+        if(window.innerWidth <= 520){
+          scrollerEl.scrollBy({ left: (cards[0] && cards[0].clientWidth || 300) + 12, behavior:'smooth' });
+        } else {
+          index = Math.min(index + 1, Math.max(0, cards.length - visible)); 
+          update();
+        }
       });
       prev.addEventListener('click', ()=>{
-        index = Math.max(0, index - 1); 
-        update();
+        if(window.innerWidth <= 520){
+          scrollerEl.scrollBy({ left: -(cards[0] && cards[0].clientWidth || 300) - 12, behavior:'smooth' });
+        } else {
+          index = Math.max(0, index - 1); 
+          update();
+        }
       });
 
       // compute visible and autoplay
       visible = computeVisible();
       let autoplay = setInterval(()=>{ 
-        index = (index + 1) % cards.length; 
-        if(index > cards.length - visible) index = 0; 
-        update(); 
+        if(cards.length === 0) return;
+        if(window.innerWidth <= 520){
+          // native scroll autoplay: advance by one card
+          scrollerEl.scrollBy({ left: (cards[0] && cards[0].clientWidth || 300) + 12, behavior: 'smooth' });
+        } else {
+          index = (index + 1) % cards.length; 
+          if(index > cards.length - visible) index = 0; 
+          update(); 
+        }
       }, 3000);
       
       // pause on hover
